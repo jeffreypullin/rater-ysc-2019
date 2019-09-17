@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+  <head>
+    <title>Bayesian Analysis of Noisy Categorical Ratings</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Jeffrey Pullin" />
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Bayesian Analysis of Noisy Categorical Ratings
+### Jeffrey Pullin
+### 2/10/2019
+
+---
+
+
+
+
+
+
+# Who am I?
+
+.center[![my_path](images/my_path_image.png)]
+
+---
+class: inverse, center, middle
+
+# The problem
+
+---
+
+.center[
+
+&lt;img src="presentation_files/figure-html/unnamed-chunk-1-1.png" width="973" /&gt;
+
+]
+
+---
+
+
+add the ratings image on the left
+
+.left[
+
+&lt;img src="presentation_files/figure-html/unnamed-chunk-3-1.png" width="533" /&gt;
+
+]
+
+--
+
+
+```
+#&gt; # A tibble: 1 x 5
+#&gt;   rater_1 rater_2 rater_3 rater_4 rater_5
+#&gt;     &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
+#&gt; 1       1       2       1       2       1
+```
+
+---
+
+## The problem
+
+So we have: 
+
+
+
+
+```r
+skin_ratings
+#&gt; # A tibble: 238 x 5
+#&gt;   rater_1 rater_2 rater_3 rater_4 rater_5
+#&gt;     &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
+#&gt; 1       1       2       1       2       1
+#&gt; 2      NA       3       3       2      NA
+#&gt; 3       4       4      NA       5       5
+#&gt; # … with 235 more rows
+```
+
+We knew the Dawid and Skene model was the way to go. But wanted:
+
+* A Bayesian version of the model
+
+* A understanding (simulations!) of when the model does and doesn't work
+
+* Software (R package) to fit the the model
+
+---
+class: inverse, center, middle
+
+# Our contributions
+
+---
+## Literature
+
+### Learnings from NLP
+
+Existing use of Dawid and Skene model (**including Bayesian versions**) in the Natural Language Processing (NLP) literature. 
+
+* Used to annotate crowd sourced ratings
+
+### Diagnostic testing
+
+Closely connected to models in the **huge** field of analysing the accuarcy of dichotomous diagnostic tests (i.e. has cancer/ does not have cancer)
+
+We show that in the `\(K = 2\)` case the DS model is precisly the so-called Traditional Latent Class model
+
+---
+## Simulations
+
+Some writing and some more writing about our amazing simulations
+
+* Some dot points
+
+* and another
+
+We will have these as plots so we can control the formatting more precisely
+
+.pull-left[
+
+&lt;img src="presentation_files/figure-html/unnamed-chunk-7-1.png" width="400" /&gt;
+
+]
+
+.pull-right[
+
+&lt;img src="presentation_files/figure-html/unnamed-chunk-8-1.png" width="400" /&gt;
+
+]
+---
+## Model improvements
+
+#### New (better) prior for the `\(\theta\)` parameter. 
+
+* Allows easy interpretation in terms of the accuracy of the raters
+
+* Allow the impact of the prior on the posterior to be controlled
+
+#### Faster fitting
+
+Should have some plots here
+
+* For some cases 8x faster fit
+
+* Generally about 1.5x faster on normal data
+
+Too much text...
+
+---
+## An R package: rater
+
+Uses the probablistic progamming language **Stan** as a computational backend. Designed to be:
+
+* User friendly / well documented
+* Good software (testing, CI, etc.)
+
+
+```r
+#remotes::install_github(jeffreypullin/rater)
+library(rater)
+```
+
+
+
+Model fitting:
+
+```r
+skin_fit &lt;- rater(skin, dawid_skene())
+```
+
+Parameter extraction:
+
+```r
+extract_pi(skin_fit) %&gt;% round(2)
+#&gt; [1] 0.05 0.35 0.49 0.08 0.03
+```
+
+---
+## An R package: rater
+
+Plotting:
+
+```r
+plot(skin_fit, type = "theta", which = 1)
+```
+
+&lt;img src="presentation_files/figure-html/unnamed-chunk-13-1.png" style="display: block; margin: auto;" /&gt;
+
+Check it out at: https://github.com/jeffreypullin/rater
+
+
+```r
+# TODO: Put on CRAN...
+```
+
+---
+# Acknowledgements
+
+- Dr. Damjan Vuckevic
+
+- Prof. Lyle Gurrin
+
+- David Whitelaw (Australian Institute of Health and Welfare)
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();</script>
+
+<script>
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

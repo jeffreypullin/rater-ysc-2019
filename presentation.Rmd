@@ -1,0 +1,237 @@
+---
+title: "Bayesian Analysis of Noisy Categorical Ratings"
+author: "Jeffrey Pullin"
+date: "2/10/2019"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: xaringan-themer.css
+    nature:
+      highlightStyle: github
+---
+
+```{r xaringan-themer, include = FALSE}
+library(xaringanthemer)
+duo_accent(primary_color = "#006747", 
+           secondary_color = "#ca2c92",
+           header_font_google = google_font("menlo"),
+           text_font_google = google_font("menlo"))
+```
+
+```{r setup, include=FALSE}
+library(magick)
+library(tibble)
+library(magrittr)
+library(rater)
+
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+
+options(
+  tibble.print_min = 3, 
+  tibble.print_max = 3
+)
+```
+
+# Who am I?
+
+.center[![my_path](images/my_path_image.png)]
+
+---
+class: inverse, center, middle
+
+# The problem
+
+---
+
+.center[
+
+```{r, echo = FALSE}
+image_read(here::here("images", "skin_image.png"))
+```
+
+]
+
+---
+```{r, echo = FALSE}
+image_ratings <- tibble::tribble(
+  ~rater_1, ~rater_2, ~rater_3, ~rater_4, ~rater_5, 
+         1,        2,        1,        2,       1, 
+)
+```
+
+add the ratings image on the left
+
+.left[
+
+```{r, echo = FALSE}
+image_read(here::here("images", "skin_image.png")) %>% 
+  image_scale("400")
+```
+
+]
+
+--
+
+```{r, echo = FALSE}
+image_ratings
+```
+
+---
+
+## The problem
+
+So we have: 
+
+```{r, echo = FALSE}
+skin_ratings <- tibble::tribble(
+  ~rater_1, ~rater_2, ~rater_3, ~rater_4, ~rater_5, 
+         1,        2,        1,        2,       1, 
+        NA,        3,        3,        2,       NA, 
+         4,        4,        NA,       5,        5,
+)
+
+# to make it look like the real skin data
+X <- matrix(0, nrow = 235, ncol = 5)
+colnames(X) <- paste0("rater_", 1:5)
+skin_ratings <- dplyr::bind_rows(skin_ratings, as_tibble(X))
+```
+
+```{r}
+skin_ratings
+```
+
+We knew the Dawid and Skene model was the way to go. But wanted:
+
+* A Bayesian version of the model
+
+* A understanding (simulations!) of when the model does and doesn't work
+
+* Software (R package) to fit the the model
+
+---
+class: inverse, center, middle
+
+# Our contributions
+
+---
+## Literature
+
+### Learnings from NLP
+
+Existing use of Dawid and Skene model (**including Bayesian versions**) in the Natural Language Processing (NLP) literature. 
+
+* Used to annotate crowd sourced ratings
+
+### Diagnostic testing
+
+Closely connected to models in the **huge** field of analysing the accuarcy of dichotomous diagnostic tests (i.e. has cancer/ does not have cancer)
+
+We show that in the $K = 2$ case the DS model is precisly the so-called Traditional Latent Class model
+
+---
+## Simulations
+
+Some writing and some more writing about our amazing simulations
+
+* Some dot points
+
+* and another
+
+We will have these as plots so we can control the formatting more precisely
+
+.pull-left[
+
+```{r, echo = FALSE}
+# Placeholder until we have better plots
+"/Users/jeffreypullin/Documents/papers/rater/figures/figure_2.pdf" %>% 
+  image_read() %>%
+  image_scale("300")
+```
+
+]
+
+.pull-right[
+
+```{r, echo = FALSE}
+# Placeholder until we have better plots
+"/Users/jeffreypullin/Documents/papers/rater/figures/figure_3.pdf" %>% 
+  image_read() %>%
+  image_scale("300")
+```
+
+]
+---
+## Model improvements
+
+#### New (better) prior for the $\theta$ parameter. 
+
+* Allows easy interpretation in terms of the accuracy of the raters
+
+* Allow the impact of the prior on the posterior to be controlled
+
+#### Faster fitting
+
+Should have some plots here
+
+* For some cases 8x faster fit
+
+* Generally about 1.5x faster on normal data
+
+Too much text...
+
+---
+## An R package: rater
+
+Uses the probablistic progamming language **Stan** as a computational backend. Designed to be:
+
+* User friendly / well documented
+* Good software (testing, CI, etc.)
+
+```{r, eval = FALSE}
+#remotes::install_github(jeffreypullin/rater)
+library(rater)
+```
+
+```{r, cache = TRUE, include = FALSE}
+library(rater)
+# For the purposes of the talk we hide data load/conversion issues
+skin <- readRDS("/Users/jeffreypullin/Documents/R/paper/data/skin.rds")
+skin <- long_data(skin)
+skin_fit <- rater(skin, dawid_skene())
+```
+
+Model fitting:
+```{r, eval = FALSE}
+skin_fit <- rater(skin, dawid_skene())
+```
+
+Parameter extraction:
+```{r}
+extract_pi(skin_fit) %>% round(2)
+```
+
+---
+## An R package: rater
+
+Plotting:
+```{r, fig.width = 4, fig.height = 4, fig.align = "center"}
+plot(skin_fit, type = "theta", which = 1)
+```
+
+Check it out at: https://github.com/jeffreypullin/rater
+
+```{r}
+# TODO: Put on CRAN...
+```
+
+---
+# Acknowledgements
+
+- Dr. Damjan Vuckevic
+
+- Prof. Lyle Gurrin
+
+- David Whitelaw (Australian Institute of Health and Welfare)
