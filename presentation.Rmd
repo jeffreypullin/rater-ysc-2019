@@ -12,10 +12,8 @@ output:
 
 ```{r xaringan-themer, include = FALSE}
 library(xaringanthemer)
-duo_accent(primary_color = "#006747", 
-           secondary_color = "#ca2c92",
-           header_font_google = google_font("menlo"),
-           text_font_google = google_font("menlo"))
+mono_accent(base_color = "steelblue", 
+            header_font_google = google_font("menlo"))
 ```
 
 ```{r setup, include=FALSE}
@@ -146,7 +144,7 @@ We will have these as plots so we can control the formatting more precisely
 
 ```{r, echo = FALSE}
 # Placeholder until we have better plots
-"/Users/jeffreypullin/Documents/papers/rater/figures/figure_2.pdf" %>% 
+"/Users/jeffreypullin/Documents/papers/rater/paper/figures/figure_2.pdf" %>% 
   image_read() %>%
   image_scale("300")
 ```
@@ -157,7 +155,7 @@ We will have these as plots so we can control the formatting more precisely
 
 ```{r, echo = FALSE}
 # Placeholder until we have better plots
-"/Users/jeffreypullin/Documents/papers/rater/figures/figure_3.pdf" %>% 
+"/Users/jeffreypullin/Documents/papers/rater/paper/figures/figure_3.pdf" %>% 
   image_read() %>%
   image_scale("300")
 ```
