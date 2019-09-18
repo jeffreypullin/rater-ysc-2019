@@ -202,7 +202,7 @@ Check it out at: https://github.com/jeffreypullin/rater
 ---
 # Acknowledgements
 
-- Dr. Damjan Vuckevic
+- Dr. Damjan Vukcevic
 
 - Prof. Lyle Gurrin
 
