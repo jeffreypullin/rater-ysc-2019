@@ -13,6 +13,7 @@ output:
 ```{r xaringan-themer, include = FALSE}
 library(xaringanthemer)
 mono_accent(base_color = "steelblue", 
+            text_font_google = google_font("menlo"), 
             header_font_google = google_font("menlo"))
 ```
 
