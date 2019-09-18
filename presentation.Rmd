@@ -28,8 +28,8 @@ knitr::opts_chunk$set(
 )
 
 options(
-  tibble.print_min = 3, 
-  tibble.print_max = 3
+  tibble.print_min = 1, 
+  tibble.print_max = 1
 )
 ```
 
@@ -78,59 +78,49 @@ image_ratings
 ```
 
 ---
-
 ## The problem
 
-So we have: 
+Need a model which:
 
-```{r, echo = FALSE}
-skin_ratings <- tibble::tribble(
-  ~rater_1, ~rater_2, ~rater_3, ~rater_4, ~rater_5, 
-         1,        2,        1,        2,       1, 
-        NA,        3,        3,        2,       NA, 
-         4,        4,        NA,       5,        5,
-)
+* Predicts latent class (with uncertainty!)
 
-# to make it look like the real skin data
-X <- matrix(0, nrow = 235, ncol = 5)
-colnames(X) <- paste0("rater_", 1:5)
-skin_ratings <- dplyr::bind_rows(skin_ratings, as_tibble(X))
-```
+* Incoporates information (a priori and data driven) about the raters accuracy
 
-```{r}
-skin_ratings
-```
+Also:
 
-We knew the Dawid and Skene model was the way to go. But wanted:
+* We need to understand how the model performs in range of situations
 
-* A Bayesian version of the model
-
-* A understanding (simulations!) of when the model does and doesn't work
-
-* Software (R package) to fit the the model
+* We need software (R package) to fit the model
 
 ---
 class: inverse, center, middle
 
-# Our contributions
+# Our solution
 
 ---
-## Literature
 
-### Learnings from NLP
+## The model: Dawid and Skene
 
-Existing use of Dawid and Skene model (**including Bayesian versions**) in the Natural Language Processing (NLP) literature. 
+First proposed in 1981, designed for biostatistical data, fit through EM
 
-* Used to annotate crowd sourced ratings
+#### Benefits:
 
-### Diagnostic testing
+* Models a categorical latent class; produces probabilites of all the item 
+  belonging to each of the classes
 
-Closely connected to models in the **huge** field of analysing the accuarcy of dichotomous diagnostic tests (i.e. has cancer/ does not have cancer)
+* Models the raters accuracy directly and in a flexible way 
 
-We show that in the $K = 2$ case the DS model is precisly the so-called Traditional Latent Class model
+* Minimal yet flexible (except for some conditional independence assumptions)
+
+We implement a Bayesian version using NUTS through **Stan** to fit
+the models
+
+Extensively used in the Natural Langauge Processing literature
 
 ---
 ## Simulations
+
+TODO: which are the best simulations?
 
 Some writing and some more writing about our amazing simulations
 
@@ -161,29 +151,12 @@ We will have these as plots so we can control the formatting more precisely
 ```
 
 ]
----
-## Model improvements
-
-#### New (better) prior for the $\theta$ parameter. 
-
-* Allows easy interpretation in terms of the accuracy of the raters
-
-* Allow the impact of the prior on the posterior to be controlled
-
-#### Faster fitting
-
-Should have some plots here
-
-* For some cases 8x faster fit
-
-* Generally about 1.5x faster on normal data
-
-Too much text...
 
 ---
 ## An R package: rater
 
-Uses the probablistic progamming language **Stan** as a computational backend. Designed to be:
+Uses the probablistic progamming language **Stan** as a computational backend.
+Designed to be:
 
 * User friendly / well documented
 * Good software (testing, CI, etc.)

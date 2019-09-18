@@ -60,55 +60,49 @@ add the ratings image on the left
 ```
 
 ---
-
 ## The problem
 
-So we have: 
+Need a model which:
 
+* Predicts latent class (with uncertainty!)
 
+* Incoporates information (a priori and data driven) about the raters accuracy
 
+Also:
 
-```r
-skin_ratings
-#&gt; # A tibble: 238 x 5
-#&gt;   rater_1 rater_2 rater_3 rater_4 rater_5
-#&gt;     &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
-#&gt; 1       1       2       1       2       1
-#&gt; 2      NA       3       3       2      NA
-#&gt; 3       4       4      NA       5       5
-#&gt; # … with 235 more rows
-```
+* We need to understand how the model performs in range of situations
 
-We knew the Dawid and Skene model was the way to go. But wanted:
-
-* A Bayesian version of the model
-
-* A understanding (simulations!) of when the model does and doesn't work
-
-* Software (R package) to fit the the model
+* We need software (R package) to fit the model
 
 ---
 class: inverse, center, middle
 
-# Our contributions
+# Our solution
 
 ---
-## Literature
 
-### Learnings from NLP
+## The model: Dawid and Skene
 
-Existing use of Dawid and Skene model (**including Bayesian versions**) in the Natural Language Processing (NLP) literature. 
+First proposed in 1981, designed for biostatistical data, fit through EM
 
-* Used to annotate crowd sourced ratings
+#### Benefits:
 
-### Diagnostic testing
+* Models a categorical latent class; produces probabilites of all the item 
+  belonging to each of the classes
 
-Closely connected to models in the **huge** field of analysing the accuarcy of dichotomous diagnostic tests (i.e. has cancer/ does not have cancer)
+* Models the raters accuracy directly and in a flexible way 
 
-We show that in the `\(K = 2\)` case the DS model is precisly the so-called Traditional Latent Class model
+* Minimal yet flexible (except for some conditional independence assumptions)
+
+We implement a Bayesian version using NUTS through **Stan** to fit
+the models
+
+Extensively used in the Natural Langauge Processing literature
 
 ---
 ## Simulations
+
+TODO: which are the best simulations?
 
 Some writing and some more writing about our amazing simulations
 
@@ -120,38 +114,21 @@ We will have these as plots so we can control the formatting more precisely
 
 .pull-left[
 
-&lt;img src="presentation_files/figure-html/unnamed-chunk-7-1.png" width="400" /&gt;
+&lt;img src="presentation_files/figure-html/unnamed-chunk-5-1.png" width="400" /&gt;
 
 ]
 
 .pull-right[
 
-&lt;img src="presentation_files/figure-html/unnamed-chunk-8-1.png" width="400" /&gt;
+&lt;img src="presentation_files/figure-html/unnamed-chunk-6-1.png" width="400" /&gt;
 
 ]
----
-## Model improvements
-
-#### New (better) prior for the `\(\theta\)` parameter. 
-
-* Allows easy interpretation in terms of the accuracy of the raters
-
-* Allow the impact of the prior on the posterior to be controlled
-
-#### Faster fitting
-
-Should have some plots here
-
-* For some cases 8x faster fit
-
-* Generally about 1.5x faster on normal data
-
-Too much text...
 
 ---
 ## An R package: rater
 
-Uses the probablistic progamming language **Stan** as a computational backend. Designed to be:
+Uses the probablistic progamming language **Stan** as a computational backend.
+Designed to be:
 
 * User friendly / well documented
 * Good software (testing, CI, etc.)
@@ -186,7 +163,7 @@ Plotting:
 plot(skin_fit, type = "theta", which = 1)
 ```
 
-&lt;img src="presentation_files/figure-html/unnamed-chunk-13-1.png" style="display: block; margin: auto;" /&gt;
+&lt;img src="presentation_files/figure-html/unnamed-chunk-11-1.png" style="display: block; margin: auto;" /&gt;
 
 Check it out at: https://github.com/jeffreypullin/rater
 
